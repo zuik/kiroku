@@ -18,3 +18,38 @@ GET: list all items in the feed
 GET: information about an item
 
 """
+import logging
+
+from krk.config import db
+
+from flask import Flask, jsonify
+
+api = Flask(__name__)
+
+l = logging.getLogger(__name__)
+
+
+@api.route("/status")
+def global_status():
+    """
+    Status for the whole system.
+
+    :return:
+    """
+    return jsonify(list(db["status"].find()))
+
+
+@api.route("/status/<what>")
+def status_for(what):
+    """
+    Get status for an specific thing.
+
+    :param what: the _id of the thing.
+    :return: status of that thing.
+    """
+    status = db["status"].find_one({"_id": what})
+    if not status:
+        l.info("Can't find status for %s", what)
+        return jsonify({"error": "can't find status of {}".format(what)})
+    else:
+        return jsonify(status)
