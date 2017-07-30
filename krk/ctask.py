@@ -1,6 +1,7 @@
 """
 Wrapper for various thing from celery
 """
+from datetime import datetime, timedelta
 import logging
 from urllib.parse import urlparse
 
@@ -42,5 +43,17 @@ def download(url, filename=None, params=None, headers=HEADERS, filetype=None):
     return write_file(r, path)
 
 
+def enq(feed_id, interval):
+    feed = db["feeds"].find_one({"_id":feed_id})
+
+
+    l.debug("Got %s", feed_id)
+
+    next_poll = datetime.now(tz=UTC) + timedelta(seconds=interval)
+
+    db["status"].update_one({"_id": feed_id}, {"$set": {"pollTime": next_poll}})
+    return
+
+
 if __name__ == '__main__':
-    download("http://bls.org")
+    pass
