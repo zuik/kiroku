@@ -16,10 +16,10 @@ def get(url, params=None, headers=HEADERS):
     r = requests.get(url, params=params, headers=headers)
     if r.status_code == 200:
         try:
-            l.debug("Got JSON, returning")
+            l.debug("Got JSON from url %s, returning", url)
             return r.json()
         except:
-            l.debug("Not JSON, returning")
+            l.debug("Not JSON from url %s, returning", url)
             # Do not let requests to handle text encoding.
             return r.content
     else:
