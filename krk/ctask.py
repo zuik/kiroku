@@ -7,9 +7,7 @@ from urllib.parse import urlparse
 import os
 import time
 
-from krk import YEAR_2017
-
-from krk.config import c, HEADERS, db
+from krk.config import c, HEADERS, db, YEAR_2017
 from krk.gen_id import to_b32
 from krk.requester import get
 from krk.tools import write_file
