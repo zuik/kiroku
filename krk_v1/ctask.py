@@ -1,17 +1,17 @@
 """
 Wrapper for various thing from celery
 """
-from datetime import datetime, timedelta
 import logging
+import time
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 import os
-import time
-
 from krk.config import c, HEADERS, db, YEAR_2017
 from krk.gen_id import to_b32
 from krk.requester import get
-from krk.tools import write_file
+
+from krk_v1.tools import write_file
 
 l = logging.getLogger(__name__)
 
@@ -43,9 +43,9 @@ def download(url, filename=None, params=None, headers=HEADERS, filetype=None):
     return write_file(r, path)
 
 
+@c.task(name="enq-feed")
 def enq(feed_id, interval):
     feed = db["feeds"].find_one({"_id":feed_id})
-
 
     l.debug("Got %s", feed_id)
 

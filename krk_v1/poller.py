@@ -10,14 +10,13 @@ We will store the last poll time of each feed and enqueue the next poll time acc
 We will queue the interval after the item finished downloading.
 
 """
+import logging
 from datetime import datetime
 
+from krk.config import db
 from pytz import UTC
 
-import logging
-
-from krk.config import db
-from krk.ctask import enq
+from krk_v1.ctask import enq
 
 l = logging.getLogger(__name__)
 

@@ -1,7 +1,8 @@
 import logging
+
 import os
 
-from krk.config import RESULT_FOLDER
+from krk_v1 import RESULT_FOLDER
 
 l = logging.getLogger(__name__)
 

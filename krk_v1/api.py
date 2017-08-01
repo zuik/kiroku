@@ -20,9 +20,9 @@ GET: information about an item
 """
 import logging
 
-from krk.config import db
-
 from flask import Flask, jsonify
+
+from krk_v1 import db
 
 api = Flask(__name__)
 

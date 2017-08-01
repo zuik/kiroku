@@ -1,7 +1,8 @@
-import requests
 import logging
 
-from krk.config import HEADERS
+import requests
+
+from krk_v1 import HEADERS
 
 l = logging.getLogger(__name__)
 
