@@ -7,11 +7,13 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 import os
-from krk.config import c, HEADERS, db, YEAR_2017
-from krk.gen_id import to_b32
-from krk.requester import get
+from pytz import UTC
 
-from krk_v1.tools import write_file
+from krk.gen_id import to_b32
+
+from krk.config import c, HEADERS, db
+from krk.requester import get
+from krk.tools import write_file
 
 l = logging.getLogger(__name__)
 
@@ -21,7 +23,8 @@ def download(url, filename=None, params=None, headers=HEADERS, filetype=None):
     """
     Get and download an url into a file
     
-    :param str url: 
+    :param filetype:
+    :param str url:
     :param path filename: Path to save the result file 
     :param dict params: 
     :param dict headers: 
@@ -36,7 +39,7 @@ def download(url, filename=None, params=None, headers=HEADERS, filetype=None):
     if not filename:
         up = urlparse(url)
         domain = up.netloc
-        filename = "{}_{}{}".format(domain, to_b32(int(time.time() - YEAR_2017)), filetype)
+        filename = "{}_{}{}".format(domain, to_b32(int(time.time())), filetype)
 
     path = os.path.join(filename)
 
@@ -45,13 +48,17 @@ def download(url, filename=None, params=None, headers=HEADERS, filetype=None):
 
 @c.task(name="enq-feed")
 def enq(feed_id, interval):
-    feed = db["feeds"].find_one({"_id":feed_id})
+    feed = db["feeds"].find_one({"_id": feed_id})
 
-    l.debug("Got %s", feed_id)
+    l.debug("Enqueueing %s", feed_id)
+
+    filename = "{}_{}.feed".format(feed_id, to_b32(int(time.time())))
+
+    download.delay(feed["url"], filename=filename)
 
     next_poll = datetime.now(tz=UTC) + timedelta(seconds=interval)
 
-    db["status"].update_one({"_id": feed_id}, {"$set": {"pollTime": next_poll}})
+    db["feeds"].update_one({"_id": feed_id}, {"$set": {"pollTime": next_poll}})
     return
 
 
