@@ -10,6 +10,11 @@ We will store the last poll time of each feed and enqueue the next poll time acc
 We will queue the interval after the item finished downloading.
 
 """
+
+# Todo: Everytime we poll the feed, at a line in its entry so that we know how many time the feed has been polled and
+#  where those files are.
+
+
 import logging
 from datetime import datetime
 import time
