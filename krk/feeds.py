@@ -36,3 +36,7 @@ def add_feed(feed_url, interval, feed_name=None):
             "interval": interval,
             "pollTime": datetime.now(tz=UTC)
         })
+
+
+def feed_info(feed_name):
+    pass
