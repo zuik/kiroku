@@ -61,11 +61,17 @@ def enq(feed_id, interval):
 
     filename = "{}_{}.feed".format(feed_id, to_b32(int(time.time())))
 
-    download.delay(feed["url"], filename=filename)
+    # Block here so that we have the path. This change the nature of next_poll date
+    url, path = download(feed["url"], filename=filename)
 
-    next_poll = datetime.now(tz=UTC) + timedelta(seconds=interval)
+    poll_attempt = {
+        "path": path,
+        "time": datetime.now(tz=UTC)
+    }
 
-    db["feeds"].update_one({"_id": feed_id}, {"$set": {"pollTime": next_poll}})
+    next_poll = poll_attempt["time"] + timedelta(seconds=interval)
+
+    db["feeds"].update_one({"_id": feed_id}, {"$set": {"pollTime": next_poll}, "$push": {"pollAttempts": poll_attempt}})
     return
 
 

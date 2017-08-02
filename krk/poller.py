@@ -11,10 +11,6 @@ We will queue the interval after the item finished downloading.
 
 """
 
-# Todo: Everytime we poll the feed, at a line in its entry so that we know how many time the feed has been polled and
-#  where those files are.
-
-
 import logging
 from datetime import datetime
 import time
@@ -69,4 +65,4 @@ if __name__ == '__main__':
 
     while True:
         run_poll()
-        time.sleep(1)
+        time.sleep(2)
