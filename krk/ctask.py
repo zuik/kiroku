@@ -1,6 +1,7 @@
 """
 Wrapper for various thing from celery
 """
+
 import logging
 import time
 from datetime import datetime, timedelta
@@ -18,36 +19,42 @@ from krk.tools import write_file
 l = logging.getLogger(__name__)
 
 
-@c.task(name="download")
-def download(url, filename=None, params=None, headers=HEADERS, filetype=None):
+@c.task(name="krk.download")
+def download(url, filename=None, params=None, headers=HEADERS):
     """
     Get and download an url into a file
     
-    :param filetype:
-    :param str url:
+    :param str url: url to download
     :param path filename: Path to save the result file 
-    :param dict params: 
-    :param dict headers: 
-    :return: 
+    :param dict params: parameters to pass to requests
+    :param dict headers: headers to pass to requests
+    :return: url and the path downloaded
+    :rtype: (str, str)
     """
     l.info("Task getting url %s", url)
     r = get(url, params=params, headers=headers)
 
-    if not filetype:
-        filetype = ".json" if isinstance(r, dict) else ".result"
+    file_type = ".json" if isinstance(r, dict) else ".result"
 
     if not filename:
         up = urlparse(url)
         domain = up.netloc
-        filename = "{}_{}{}".format(domain, to_b32(int(time.time())), filetype)
+        filename = "{}_{}{}".format(domain, to_b32(int(time.time())), file_type)
 
     path = os.path.join(filename)
 
-    return write_file(r, path)
+    return url, write_file(r, path)
 
 
-@c.task(name="enq-feed")
+@c.task(name="krk.enq-feed")
 def enq(feed_id, interval):
+    """
+    Enqueue the feed to be download
+
+    :param str feed_id: Id of the feed to enqueue
+    :param interval: How long after the download are enqueued the feed should be poll again?
+    """
+
     feed = db["feeds"].find_one({"_id": feed_id})
 
     l.debug("Enqueueing %s", feed_id)

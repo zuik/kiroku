@@ -17,7 +17,7 @@ def get(url, params=None, headers=HEADERS):
     r = requests.get(url, params=params, headers=headers)
     if r.status_code == 200:
         try:
-            l.debug("Got JSON from url %s, returning", url)
+            l.debug("Trying to get JSON from url %s, returning", url)
             return r.json()
         except:
             l.debug("Not JSON from url %s, returning", url)
